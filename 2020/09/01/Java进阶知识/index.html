@@ -171,7 +171,7 @@
         <div class="row">
             <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-1 col-sm-9 post-container">
-                <h1 id="JUC相关"><a href="#JUC相关" class="headerlink" title="JUC相关"></a>JUC相关</h1><h2 id="线程有哪几种状态"><a href="#线程有哪几种状态" class="headerlink" title="线程有哪几种状态"></a>线程有哪几种状态</h2><p>New、Runnable、Blocked、Timed_Waiting、Waiting、Terminated【6种，出去开始和终结，有4中】<br><img src="http://song-8023.cn-bj.ufileos.com/java_thread_status_trans.png?UCloudPublicKey=sYPpSqIxUlLU+mqRbij5c81N8BhHHmRWct6WvXrn0SYoRc4/GEfpyzTT1cU=&Signature=aqmexHm7iZ8rotoUDo0GgwqWpBg=&Expires=1598947556" alt="image"></p>
+                <h1 id="JUC相关"><a href="#JUC相关" class="headerlink" title="JUC相关"></a>JUC相关</h1><h2 id="线程有哪几种状态"><a href="#线程有哪几种状态" class="headerlink" title="线程有哪几种状态"></a>线程有哪几种状态</h2><p>New、Runnable、Blocked、Timed_Waiting、Waiting、Terminated【6种，出去开始和终结，有4中】<br><img src="http://117.50.98.206/images/java_thread_status_trans.png" alt="image"></p>
 <h2 id="run-、start-方法的区别"><a href="#run-、start-方法的区别" class="headerlink" title="run()、start()方法的区别"></a>run()、start()方法的区别</h2><p>start()是开启一个线程；run()是一个普通方法，程序会顺序执行  </p>
 <h2 id="并发、并行的区别"><a href="#并发、并行的区别" class="headerlink" title="并发、并行的区别"></a>并发、并行的区别</h2><p>并发既多个线程访问同一个资源<br>并行既多个线程同时处理多个任务  </p>
 <h2 id="volatile关键字的理解"><a href="#volatile关键字的理解" class="headerlink" title="volatile关键字的理解"></a>volatile关键字的理解</h2><p>volatile是一个轻量级的同步机制，主要有两个特性</p>
@@ -189,7 +189,7 @@
 <li>wait()、notify()、notifyAll()是Object的方法；sleep()是Thread的方法</li>
 <li>wait()方法会释放锁;sleep()方法不会释放锁</li>
 </ul>
-<h2 id="JMM——JAVA-Memory-Model-java内存模型"><a href="#JMM——JAVA-Memory-Model-java内存模型" class="headerlink" title="JMM——JAVA Memory Model,java内存模型"></a>JMM——JAVA Memory Model,java内存模型</h2><p>java内存模型是一个抽象概念，用于规定程序中各个变量的访问方式，是多线程执行正确性的约束规范。由于jvm运行程序的实体是线程，JVM创建线程时会为其创建一个工作内存，既栈，用于储存线程的私有数据。而java线程模型规定所有的变量都储存在主内存中，主内存是共享区域，但线程对变量的操作必须在工作内存中进行，所以首先要将主内存的变量复制到工作内存，对变量进行操作后再回写到主内存。模型如下:<br><img src="https://note.youdao.com/yws/res/4722/28A3E03B3DF64FAABDE5CDCA18FC17FB" alt="image"><br>粗略来说可以认为JMM中的主内存对应Java内存区域划分中的堆、方法区，JMM中的工作内存对应Java内存区域划分中的栈、程序计数器  </p>
+<h2 id="JMM——JAVA-Memory-Model-java内存模型"><a href="#JMM——JAVA-Memory-Model-java内存模型" class="headerlink" title="JMM——JAVA Memory Model,java内存模型"></a>JMM——JAVA Memory Model,java内存模型</h2><p>java内存模型是一个抽象概念，用于规定程序中各个变量的访问方式，是多线程执行正确性的约束规范。由于jvm运行程序的实体是线程，JVM创建线程时会为其创建一个工作内存，既栈，用于储存线程的私有数据。而java线程模型规定所有的变量都储存在主内存中，主内存是共享区域，但线程对变量的操作必须在工作内存中进行，所以首先要将主内存的变量复制到工作内存，对变量进行操作后再回写到主内存。模型如下:<br><img src="http://117.50.98.206/images/JMM_simple.jpg" alt="image"><br>粗略来说可以认为JMM中的主内存对应Java内存区域划分中的堆、方法区，JMM中的工作内存对应Java内存区域划分中的栈、程序计数器  </p>
 <p>这样的架构之下可以预见会存在一定的安全问题，为了解决此类问题，因此JMM定义了三大特性原子性、有序性、可见性，如synchronized、volatile、ReentrantLock等等  </p>
 <p>之所以说volatile轻量就是因为volatile只保证了可见性、有序性而不保证原子性</p>
 <p><strong>hapen before原则</strong></p>
@@ -202,8 +202,8 @@
 <li>线程终结规则。线程的所有操作都发生于线程终结之前</li>
 <li>对象终结规则。一个对象的构造方法发生于执行finalize()方法之前</li>
 </ul>
-<h2 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h2><p>compare and swap,既比较并交换;cas有三个参数：实际值、期望值和新值。期望值与实际值相同则把实际值替换为新值。<br>原理：自旋、unsafe类<br>以AtomicInteger举例。AtomicInteger在初始化时会获取UnSafe类的实例unsafe，一个用volatile修饰的int值value，value的偏移量valueoffset。<br><img src="https://note.youdao.com/yws/res/4868/0EDF3160BD074F33BE9186B1C2F57B3D" alt="image"></p>
-<p>调用getAndIncrement()源码如下<br><img src="https://note.youdao.com/yws/res/4871/323A0D68D7FB4F29900B289B8E63B312" alt="image"><br><img src="https://note.youdao.com/yws/res/4872/01BCB1AFDE46467AAF9ED1D81DF12277" alt="image"><br>getIntVolatile(var1, var2)，这是个native方法,其实就是获取var1中，var2偏移量处的值。var1就是AtomicInteger对象，var2就是我们前面提到的valueOffset，这样我们就从内存里获取到现在valueOffset处的值。</p>
+<h2 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h2><p>compare and swap,既比较并交换;cas有三个参数：实际值、期望值和新值。期望值与实际值相同则把实际值替换为新值。<br>原理：自旋、unsafe类<br>以AtomicInteger举例。AtomicInteger在初始化时会获取UnSafe类的实例unsafe，一个用volatile修饰的int值value，value的偏移量valueoffset。<br><img src="http://117.50.98.206/images/AtomicInteger_1.png" alt="image"></p>
+<p>调用getAndIncrement()源码如下<br><img src="http://117.50.98.206/images/AtomicInteger_2.png" alt="image"><br><img src="http://117.50.98.206/images/AtomicInteger_3.png" alt="image"><br>getIntVolatile(var1, var2)，这是个native方法,其实就是获取var1中，var2偏移量处的值。var1就是AtomicInteger对象，var2就是我们前面提到的valueOffset，这样我们就从内存里获取到现在valueOffset处的值。</p>
 <p>compareAndSwapInt（var1, var2, var5, var5 + var4）其实换成compareAndSwapInt（obj, offset, expect, update）比较清楚，意思就是如果obj内的value和expect相等，就证明没有其他线程改变过这个变量，那么就更新它为update，如果这一步的CAS没有成功，那就采用<strong>自旋</strong>的方式继续进行CAS操作，取出乍一看这也是两个步骤了啊，<strong>其实在JNI里是借助于一个CPU指令完成的，是原子操作</strong></p>
 <p>缺点:</p>
 <ul>
@@ -211,7 +211,7 @@
 <li>只能保证一个共享变量的原子操作</li>
 <li>ABA问题<br>规避ABA问题可以使用AtomicReference+版本号，或者AtomicStampedReference</li>
 </ul>
-<h2 id="java中锁的种类"><a href="#java中锁的种类" class="headerlink" title="java中锁的种类"></a>java中锁的种类</h2><p><img src="https://note.youdao.com/yws/res/5118/96DAA1A473CF4BFCA4807CBE51793BE2" alt="image"></p>
+<h2 id="java中锁的种类"><a href="#java中锁的种类" class="headerlink" title="java中锁的种类"></a>java中锁的种类</h2><p><img src="http://117.50.98.206/images/java_lock_category_tree.png" alt="image"></p>
 <p><a target="_blank" rel="noopener" href="https://tech.meituan.com/2018/11/15/java-lock.html">https://tech.meituan.com/2018/11/15/java-lock.html</a>  </p>
 <h2 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h2><p>线程池核心参数:</p>
 <ul>
@@ -237,7 +237,7 @@
 <li>newCachedThreadPool：核心线程数是1，但最大线程数是int最大值，阻塞队列长度为1，容易OOM</li>
 </ul>
 <p>应使用new ThreadPoolExecutors(corePoolSize,maxPoolSize,aliveTime,timeunit,blockingQueue)手动创建</p>
-<h2 id="阻塞队列"><a href="#阻塞队列" class="headerlink" title="阻塞队列"></a>阻塞队列</h2><p><img src="https://note.youdao.com/yws/res/5378/A0FD4DE0C0404AE599564EB1B89B7109" alt="image"></p>
+<h2 id="阻塞队列"><a href="#阻塞队列" class="headerlink" title="阻塞队列"></a>阻塞队列</h2><p><img src="http://117.50.98.206/images/block_queue.png" alt="image"></p>
 <ul>
 <li>ArrayBlockingQueue:一个由数组结构组成的有界阻塞队列</li>
 <li>LinkedBlockingQueue：一个由链表结构组成的有界阻塞队列。</li>
@@ -307,7 +307,7 @@
 <h2 id="Class-forName-和ClassLoader-loadClass-有什么区别"><a href="#Class-forName-和ClassLoader-loadClass-有什么区别" class="headerlink" title="Class.forName()和ClassLoader.loadClass()有什么区别"></a>Class.forName()和ClassLoader.loadClass()有什么区别</h2><p>两者均可获取类的class对象，但Class.forName()在加载class的时候会执行其静态属性、静态块；</p>
 <p>而ClassLoader仅仅加载类，不会执行其他内容</p>
 <h2 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h2><p>jdk动态代理:只能对实现了接口的类进行动态代理;<br>cglib动态代理:对目标类的处理，生成子类的字节码</p>
-<h1 id="容器相关"><a href="#容器相关" class="headerlink" title="容器相关"></a>容器相关</h1><p>容器最主要有两类Collection和Map<br>Collection主要类如下:<br><img src="https://note.youdao.com/yws/res/4738/29ADC674C92E445B87D2301C80DEA01C" alt="image"><br>Map主要类如下:<br><img src="https://note.youdao.com/yws/res/4740/22FD3C0C933E433493C25102B777D584" alt="image"><br>重点关注几个面试中常常问到的类:</p>
+<h1 id="容器相关"><a href="#容器相关" class="headerlink" title="容器相关"></a>容器相关</h1><p>容器最主要有两类Collection和Map<br>Collection主要类如下:<br><img src="http://117.50.98.206/images/Collection.png" alt="image"><br>Map主要类如下:<br><img src="http://117.50.98.206/images/Map.png" alt="image"><br>重点关注几个面试中常常问到的类:</p>
 <h2 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h2><p>CopyOnWriteArrayList是一个线程安全的list，读写分离，读操作在原始数组中进行，写操作在副本数组中进行，写操作完成后替换原始数组<br>需要注意在写操作的时候会加锁<br>优点:写操作的同时允许读操作，大大提高了读操作的性能，因此很适合读多写少的应用场景<br>缺点:</p>
 <ul>
 <li>内存占用：在写操作时需要复制一个新的数组，使得内存占用为原来的两倍左右</li>
@@ -413,7 +413,7 @@
 <li>hash slot(hash槽)</li>
 </ul>
 <h1 id="Kafka"><a href="#Kafka" class="headerlink" title="Kafka"></a>Kafka</h1><p>kafka拓扑结构</p>
-<p><img src="/Users/vivian/Downloads/kafka%E7%9A%84%E6%8B%93%E6%89%91%E5%9B%BE%E5%BD%A2.png" alt="kafka的拓扑图形"></p>
+<p><img src="http://117.50.98.206/images/kafka_Topology.jpg" alt="kafka的拓扑图形"></p>
 <p>broker:缓存代理，Kafka集群中的一台或多台服务器统称broker.</p>
 <p>producer:向broker发送消息客户端</p>
 <p>consumer:从broker获取消息的客户端</p>
@@ -458,53 +458,20 @@
 
 
 
-<h1 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h1><h2 id="饿汉模式，代码如下，不存在线程安全问题，但是没有延迟加载。"><a href="#饿汉模式，代码如下，不存在线程安全问题，但是没有延迟加载。" class="headerlink" title="饿汉模式，代码如下，不存在线程安全问题，但是没有延迟加载。"></a>饿汉模式，代码如下，不存在线程安全问题，但是没有延迟加载。</h2><p><code>public class Singleton&#123;</code></p>
-<p>​    private static final Singleton INSTANCE = new Singleton();</p>
-<p>​    private Singleton(){</p>
-<p>​    }</p>
-<p>​    public static Singleton getSingleton(){</p>
-<p>​            return INSTANCE;</p>
-<p>​    }</p>
-<p><code>&#125;</code></p>
-<h2 id="懒汉模式，延迟加载，但是存在，线程安全问题，用DCL解决"><a href="#懒汉模式，延迟加载，但是存在，线程安全问题，用DCL解决" class="headerlink" title="懒汉模式，延迟加载，但是存在，线程安全问题，用DCL解决"></a>懒汉模式，延迟加载，但是存在，线程安全问题，用DCL解决</h2><p><code>public class Singleton&#123;</code></p>
-<p>​    private static  Singleton instance = null;</p>
-<p>​    private Singleton(){</p>
-<p>​    }</p>
-<p>​    public static Singleton getSingleton(){</p>
-<p>​            if(instance == null){</p>
-<p>​                instance = new Singleton();</p>
-<p>​            }</p>
-<p>​            return instance;</p>
-<p>​    }</p>
-<p><code>&#125;</code></p>
-<h2 id="懒汉模式，DCL版本"><a href="#懒汉模式，DCL版本" class="headerlink" title="懒汉模式，DCL版本"></a>懒汉模式，DCL版本</h2><p><code>public class Singleton&#123;</code></p>
-<p>​    private <strong>volatile</strong> static  Singleton instance = null;</p>
-<p>​    private Singleton(){</p>
-<p>​    }</p>
-<p>​    public static Singleton getSingleton(){</p>
-<p>​        if(instance == null){</p>
-<p>​            synchronized(instance){</p>
-<p>​                if(instance == null){</p>
-<p>​                    instance = new Singleton();</p>
-<p>​                }</p>
-<p>​            }</p>
-<p>​    }</p>
-<p>​    return instance;</p>
-<p>​    }</p>
-<p><code>&#125;</code></p>
-<h2 id="静态内部类，可以称为最佳方案"><a href="#静态内部类，可以称为最佳方案" class="headerlink" title="静态内部类，可以称为最佳方案"></a>静态内部类，可以称为最佳方案</h2><p><code>public class Singleton&#123;</code></p>
-<p>​    private Singleton(){</p>
-<p>​    }</p>
-<p>​    public static Singleton getSingleton(){</p>
-<p>​            return SingletonHolder.instance;</p>
-<p>​    }</p>
-<p>​    private static final class SingletonHolder {</p>
-<p>​        public static final Singleton instance = new Singleton();</p>
-<p>​    }</p>
-<p><code>&#125;</code></p>
-<h2 id="枚举，永远单例"><a href="#枚举，永远单例" class="headerlink" title="枚举，永远单例"></a>枚举，永远单例</h2><p><code>public enum Singleton&#123;</code></p>
-<p>​    INSTANCE;</p>
-<p><code>&#125;</code></p>
+<h1 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h1><h2 id="饿汉模式，代码如下，不存在线程安全问题，但是没有延迟加载。"><a href="#饿汉模式，代码如下，不存在线程安全问题，但是没有延迟加载。" class="headerlink" title="饿汉模式，代码如下，不存在线程安全问题，但是没有延迟加载。"></a>饿汉模式，代码如下，不存在线程安全问题，但是没有延迟加载。</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">`<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span></span>&#123;`</span><br><span class="line"></span><br><span class="line">​	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton INSTANCE = <span class="keyword">new</span> Singleton();</span><br><span class="line"></span><br><span class="line">​	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​	&#125;</span><br><span class="line"></span><br><span class="line">​	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getSingleton</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​			<span class="keyword">return</span> INSTANCE;</span><br><span class="line"></span><br><span class="line">​	&#125;</span><br><span class="line"></span><br><span class="line">`&#125;`</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="懒汉模式，延迟加载，但是存在，线程安全问题，用DCL解决"><a href="#懒汉模式，延迟加载，但是存在，线程安全问题，用DCL解决" class="headerlink" title="懒汉模式，延迟加载，但是存在，线程安全问题，用DCL解决"></a>懒汉模式，延迟加载，但是存在，线程安全问题，用DCL解决</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">`<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span></span>&#123;`</span><br><span class="line"></span><br><span class="line">​	<span class="keyword">private</span> <span class="keyword">static</span>  Singleton instance = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">​	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​	&#125;</span><br><span class="line"></span><br><span class="line">​	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getSingleton</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​			<span class="keyword">if</span>(instance == <span class="keyword">null</span>)&#123;</span><br><span class="line"></span><br><span class="line">​				instance = <span class="keyword">new</span> Singleton();</span><br><span class="line"></span><br><span class="line">​			&#125;</span><br><span class="line"></span><br><span class="line">​			<span class="keyword">return</span> instance;</span><br><span class="line"></span><br><span class="line">​	&#125;</span><br><span class="line"></span><br><span class="line">`&#125;`</span><br></pre></td></tr></table></figure>
+
+<h2 id="懒汉模式，DCL版本"><a href="#懒汉模式，DCL版本" class="headerlink" title="懒汉模式，DCL版本"></a>懒汉模式，DCL版本</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">`<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span></span>&#123;`</span><br><span class="line"></span><br><span class="line">​	<span class="keyword">private</span> **<span class="keyword">volatile</span>** <span class="keyword">static</span>  Singleton instance = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">​	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​	&#125;</span><br><span class="line"></span><br><span class="line">​	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getSingleton</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​		<span class="keyword">if</span>(instance == <span class="keyword">null</span>)&#123;</span><br><span class="line"></span><br><span class="line">​			<span class="keyword">synchronized</span>(instance)&#123;</span><br><span class="line"></span><br><span class="line">​				<span class="keyword">if</span>(instance == <span class="keyword">null</span>)&#123;</span><br><span class="line"></span><br><span class="line">​					instance = <span class="keyword">new</span> Singleton();</span><br><span class="line"></span><br><span class="line">​				&#125;</span><br><span class="line"></span><br><span class="line">​			&#125;</span><br><span class="line"></span><br><span class="line">​	&#125;</span><br><span class="line"></span><br><span class="line">​	<span class="keyword">return</span> instance;</span><br><span class="line"></span><br><span class="line">​	&#125;</span><br><span class="line"></span><br><span class="line">`&#125;`</span><br></pre></td></tr></table></figure>
+
+<h2 id="静态内部类，可以称为最佳方案"><a href="#静态内部类，可以称为最佳方案" class="headerlink" title="静态内部类，可以称为最佳方案"></a>静态内部类，可以称为最佳方案</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">`<span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span></span>&#123;`</span><br><span class="line"></span><br><span class="line">​	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​	&#125;</span><br><span class="line"></span><br><span class="line">​	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getSingleton</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​			<span class="keyword">return</span> SingletonHolder.instance;</span><br><span class="line"></span><br><span class="line">​	&#125;</span><br><span class="line"></span><br><span class="line">​	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonHolder</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">​		<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton instance = <span class="keyword">new</span> Singleton();</span><br><span class="line"></span><br><span class="line">​    &#125;</span><br><span class="line"></span><br><span class="line">`&#125;`</span><br></pre></td></tr></table></figure>
+
+<h2 id="枚举，永远单例"><a href="#枚举，永远单例" class="headerlink" title="枚举，永远单例"></a>枚举，永远单例</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">`<span class="keyword">public</span> <span class="keyword">enum</span> Singleton&#123;`</span><br><span class="line"></span><br><span class="line">​	INSTANCE;</span><br><span class="line"></span><br><span class="line">`&#125;`</span><br></pre></td></tr></table></figure>
+
 <h1 id="补充"><a href="#补充" class="headerlink" title="补充:"></a>补充:</h1><p><strong>nio原理</strong> </p>
 <p>selector注册监听器【服务端注册感兴趣的事件，然后轮询是否有收到相应的事件。客户端发起服务端感兴趣的事件，服务端的selector轮询到了，则会处理】</p>
 <p>BIO在accept()和read()的时候会阻塞【阻塞说明会让出CPU】</p>
@@ -530,8 +497,7 @@
 <p>加载这个ClassLoader（指ClassLoader实例对象）必须相同。</p>
 <p><strong>双亲委任模型**</strong>工作原理:**</p>
 <p>如果一个类收到了类加载的请求，它并不会自己先去加载，而是把这个请求委托给父类加载器去执行，如果父类加载器还存在父类加载器，则进一步向上委托，依次递归，请求最后到达顶层的启动类加载器，如果父类能够完成类的加载任务，就会成功返回，倘若父类加载器无法完成任务，子类加载器才会尝试自己去加载，这就是双亲委派模式。【就是每个儿子都很懒，遇到类加载的活都给它爸爸干，直到爸爸说我也做不来的时候，儿子才会想办法自己去加载。】</p>
-<h1 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h1><p>![image-20200316135213160](/Users/vivian/Library/Application Support/typora-user-images/image-20200316135213160.png)</p>
-<p>注意，ThreadLocalMap的⽣命周期跟Thread的⽣命周期是⼀样的，在某些特定条件下可能会导致内存泄漏。</p>
+<h1 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h1><p>注意，ThreadLocalMap的⽣命周期跟Thread的⽣命周期是⼀样的，在某些特定条件下可能会导致内存泄漏。</p>
 <p>具体来说，ThreadLocalMap中的ThreadLocal引⽤虽然是弱引⽤，<strong>即ThreadLocal对象本身如果不再存在任何强引⽤的情况下，在下次GC的时候便会被JVM回收，但是因为有ThreadLocalMap的存在，考虑到它的⽣命周期跟Thread相同，如果Thread 没有被回收，则ThreadLocal中的对象，即Entry的value对象未必会被回收</strong>。</p>
 <p>当然，从JDK的源码中我们可以 发现，当触发对ThreadLocal对象进⾏get或set操作时，会对Map中的应当被清理的对象进⾏清理，这也是⾮常重要的⼀点，就是这个Map是 被动删除的，如果你创建了很多ThreadLocal对象，⼜不对其进⾏读写，那么其中的value就会因为⼀直有强引⽤的存在（Thread对象到这个value之间是可达的，GC不会将其回收）⽽ 导致⽆法被回收，这就是ThreadLocal可能会导致内存泄漏的原因。这个问题的出现基本上都跟线程池的使⽤ 有关，因为线程池中的线程在执⾏完任务之后会回到池中，⼀般会在应⽤关闭时才会被回收，这就导致 ThreadLocal对象中的value对象⼀直占⽤着内存。</p>
 <p>在线程池中使⽤ThreadLocal还有个需要注意的地⽅，就是如果ThreadLocal中存的对象跟线程要执⾏的任务 有关，则可能导致ThreadLocal中保存的value串掉。为什么呢？因为线程池中同⼀个线程可能会执⾏很多个 任务，如果ThreadLocal中保存的对象没有被及时remove掉，那么之后取到的对象就是错误的。</p>
