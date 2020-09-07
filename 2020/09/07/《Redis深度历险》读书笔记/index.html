@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>old engineer | old engineer</title><meta name="description" content="《Redis深度历险》读书笔记 基础和应用篇 Redis有5种基本数据结构：string，list，hash，set，zset 字符串为动态字符串，是可以修改的字符串，底层数据结构类似ArrayList，采用预分配冗余空间来减少内存的频繁分配，当字符串长度小于1MB时，扩容都是加倍现有空间。如果超过1MB，每次扩容只会扩容1MB，字符串最大长度为512MB value如果为整数，其范围为有符号lo"><meta name="author" content="叶中中"><meta name="copyright" content="叶中中"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2020/09/07/%E3%80%8ARedis%E6%B7%B1%E5%BA%A6%E5%8E%86%E9%99%A9%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="old engineer"><meta property="og:url" content="http://yoursite.com/2020/09/07/%E3%80%8ARedis%E6%B7%B1%E5%BA%A6%E5%8E%86%E9%99%A9%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"><meta property="og:site_name" content="old engineer"><meta property="og:description" content="《Redis深度历险》读书笔记 基础和应用篇 Redis有5种基本数据结构：string，list，hash，set，zset 字符串为动态字符串，是可以修改的字符串，底层数据结构类似ArrayList，采用预分配冗余空间来减少内存的频繁分配，当字符串长度小于1MB时，扩容都是加倍现有空间。如果超过1MB，每次扩容只会扩容1MB，字符串最大长度为512MB value如果为整数，其范围为有符号lo"><meta property="og:image" content="http://117.50.98.206/images/wallpaper_drop_ocean.jpg"><meta property="article:published_time" content="2020-09-07T10:55:42.991Z"><meta property="article:modified_time" content="2020-09-07T10:55:42.991Z"><meta name="twitter:card" content="summary"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.1.1',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+      const now = new Date()
+      const expiryDay = ttl * 86400000
+      const item = {
+        value: value,
+        expiry: now.getTime() + expiryDay,
+      }
+      localStorage.setItem(key, JSON.stringify(item))
+    },
+  
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-09-07 18:55:42'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = 'false'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.1.1"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">3</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">1</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fa fa-picture-o"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fa fa-film"></i><span> 电影</span></a></li><li><a class="site-page" href="/books/"><i class="fa-fw fa fa-film"></i><span> 书籍</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fa fa-link"></i><span> 留言板</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E3%80%8ARedis%E6%B7%B1%E5%BA%A6%E5%8E%86%E9%99%A9%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0"><span class="toc-number">1.</span> <span class="toc-text">《Redis深度历险》读书笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E5%92%8C%E5%BA%94%E7%94%A8%E7%AF%87"><span class="toc-number">1.1.</span> <span class="toc-text">基础和应用篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E7%AF%87"><span class="toc-number">1.2.</span> <span class="toc-text">原理篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E7%AF%87"><span class="toc-number">1.3.</span> <span class="toc-text">集群篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E5%B1%95%E7%AF%87"><span class="toc-number">1.4.</span> <span class="toc-text">拓展篇</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E7%AF%87"><span class="toc-number">1.5.</span> <span class="toc-text">源码篇</span></a></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(http://117.50.98.206/images/wallpaper_drop_ocean.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">old engineer</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fa fa-picture-o"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fa fa-film"></i><span> 电影</span></a></li><li><a class="site-page" href="/books/"><i class="fa-fw fa fa-film"></i><span> 书籍</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fa fa-link"></i><span> 留言板</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">无题</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-09-07T10:55:42.991Z" title="发表于 2020-09-07 18:55:42">2020-09-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-07T10:55:42.991Z" title="更新于 2020-09-07 18:55:42">2020-09-07</time></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h1 id="《Redis深度历险》读书笔记"><a href="#《Redis深度历险》读书笔记" class="headerlink" title="《Redis深度历险》读书笔记"></a>《Redis深度历险》读书笔记</h1><hr>
+<h2 id="基础和应用篇"><a href="#基础和应用篇" class="headerlink" title="基础和应用篇"></a>基础和应用篇</h2><ol>
+<li>Redis有5种基本数据结构：string，list，hash，set，zset</li>
+<li>字符串为动态字符串，是可以修改的字符串，底层数据结构类似ArrayList，采用预分配冗余空间来减少内存的频繁分配，当字符串长度小于1MB时，扩容都是加倍现有空间。如果超过1MB，每次扩容只会扩容1MB，字符串最大长度为512MB</li>
+<li>value如果为整数，其范围为有符号long型</li>
+<li>list底层数据结构基于类似链表的结构实现，列表中的每个元素都使用双向指针连接</li>
+<li>lindex 需要对链表进行遍历，从而获取到指定位置的value</li>
+<li>ltrim有两个参数：start_index和end_index，区间内的值保留，其余的统统删除【感觉叫lretain比较合适】</li>
+<li>list的底层数据结构是这样的，在元素数量较少的时候，会使用一块连续的内存，叫ziplist，即压缩列表；当数据较多的时候则变为quicklist，即将多个ziplist通过双向指针串起来</li>
+<li>hash底层数据结构类似HashMap，即数组+链表，无序字典，但是在rehash的时候（比如扩容时），采用的是渐进式rehash策略，即同时保留新旧两个hash结构，查询时会同时查找两个hash结构，然后在后续的定时任务及hash操作指令中，循序渐进地将旧hash内容一点点地迁移到新的hash结构中</li>
+<li>set底层数据结构类似HashSet，内部实现类似一个特殊的字典，其中所有的value都为NULL</li>
+<li>zset底层数据结构为跳跃列表，它是一种分层结构，每层都是一个链表，同一个元素可能归属于多个层级，每一层的元素都会根据score和value来进行排序。插入新元素时，会先从顶层开始定位，然后下潜到下一层级，依此类推。什么情况下一个元素会同时处在多个层级呢？L0层包含100%的元素，然后同时归属与L1层的概率为50%，然后L2层为25%，依此类推</li>
+<li>对于set，list，hash，zset这四种容器型数据结构，都遵循：1.容器不存在则创建一个再行操作；2.如果容器中元素没有了，则删除容器，释放内存</li>
+<li>分布式锁 Redis2.8版本之后，setnx跟expire指令可以一起执行，命令：set key value ex 5 nx</li>
+<li>基于Redis实现分布式锁时，可以考虑在set的时候将value设成一个随机值，然后在删除的时候先比较下自己的随机值跟redis中的是否一致，一致的话再删除。但是匹配value跟删除key不是原子的，因此这里需要使用Lua脚本来保证原子性</li>
+<li>基于Redis实现的分布式锁，不适用于需要长时间执行的任务，因为如果锁过期了任务还没执行完，会导致其他线程也拥有了这把锁</li>
+<li>延时队列 可以使用zset实现，消息的到期处理时间作为score，然后可以用多个线程轮询zset获取任务来进行处理。涉及到的命令主要是zrangeByScore，获取0到当前时间戳范围内的任务，可以考虑一个个获取，获取成功之后要尝试zrem，返回值大于0的情况下才说明抢成功了，此时当前线程有权处理该任务。这里可以进一步优化，就是将zrangeByScore和zrem通过Lua脚本原子执行</li>
+<li>位图 就是字节数组 可以用于统计用户一年的签到记录，按天记，签了为1，没签是0</li>
+<li>HyperLogLog实现不精确的去重计数，用来统计某页面的UV（该页面一天内被多少不同的用户访问，同一个用户多次访问只算一次）</li>
+<li><strong>布隆过滤器</strong> 说某个值存在，可能实际不存在，如果说不存在，则肯定不存在。其实现原理是一个大的位数组和几个不同的无偏hash函数，无偏是说可以把hash值算的比较均匀。当向布隆过滤器添加元素时，会使用多个hash函数对key进行hash，然后再分别对位数组长度取模，之后将多个对应数组中的位置置1即可。因此在查询时，只要有一个位置为0，则说明肯定不存在，如果都为1，则可能不存在，因为存在冲突的可能，虽然概率很低</li>
+<li>简单限流 使用zset来做，其中score为时间戳，value也可以为时间戳形式的字符串，然后判断是否需要限流，首先执行zremrangeByScore指令，删除指定时间窗口之前的所有数据，然后对时间窗口内的数据进行统计，判断是否大于阈值即可。这里还需要对zset设置过期时间，只要比时间窗口长即可，可以考虑长一秒</li>
+<li>漏斗限流 Redis提供了一个模块叫Redis-Cell，提供了原子的限流指令</li>
+<li>scan 通过游标分布执行，不会长时间阻塞主线程，提供limit参数，可以控制每次返回的结果的最大条数，这是一个hint，返回的实际结果可多可少；返回的数据可能有重复，需手动去重，如果遍历过程中如果有数据修改，改动后的数据是否能遍历到是不确定的；单次返回结果为空不意味着遍历结束，而要看返回的游标是否为零</li>
+<li>redis中所有的key都存在一个很大的字典中（带有过期时间的是单独存在另一个字典中）scan返回的游标为一维数组的位置索引（称为槽），limit参数表示需要遍历的槽数。之所以返回的数据可多可少，是因为每次遍历都会将每个槽对应的链表上的元素都匹配过滤一遍，考虑到链表可能为空或包含很多数据，因此会导致最终返回的数据可多可少。</li>
+<li>scan的遍历顺序比较特别，采用的是高位进位加法，原因是避免字典扩容缩容是重复遍历槽位，或遗漏</li>
+<li>redis-cli提供查找大key的参数 –bigkeys</li>
+</ol>
+<h2 id="原理篇"><a href="#原理篇" class="headerlink" title="原理篇"></a>原理篇</h2><ol>
+<li>Redis会为每个客户端套接字关联一个指令队列，然后进行顺序处理；同样，也会关联一个响应队列</li>
+<li>Redis的定时任务会记录在一个被称为“最小堆”的数据结构中，最快要执行的任务位于堆顶。在每个循环周期，Redis都会对最小堆里面已经到时间的任务进行处理。处理完毕之后，对快要执行的任务的时间与当前时间的差值，作为select系统调用的timeout参数。因为这段时间之内没有新的定时任务需要处理，可以安心等待网络IO事件</li>
+<li>RESP Redis序列化协议，单行字符串以+号开头，多行字符串以$开头，后跟字符串长度，整数值以冒号开头，后跟整数的字符串形式，错误信息以-开头，数组以*开头，后跟数组长度，共这5个最小单元，每个单元结束之后，统一加上\r\n</li>
+<li>持久化 1.快照 2.AOF 快照是内存数据的二进制序列化形式，AOF记录内存数据修改的指令记录文本（需要定期进行AOF重写，给AOF日志瘦身）</li>
+<li>快照原理 使用操作系统的多进程COW（Copy On Write）机制来实现快照持久化，具体来说，持久化时会调用glibc的函数fork产生一个子进程，快照持久化是交给子进程来处理的。子进程产生时，与父进程共享内存里面的代码端和数据段。当父进程因为响应客户端请求而修改了内存数据，COW会将该数据对应的页复制分离出来，然后再对数据进行修改，而此时子进程对应的页面数据是没有变化的</li>
+<li>AOF 注意是先执行指令，再将日志落盘；瘦身的原理是开辟一个子进程对内存进行遍历，转换为一系列Redis的操作指令，序列化到一个新的AOF日志文件中，序列化完毕之后将操作期间发生的增量AOF日志追加到这个新的AOF日志文件中，追加完毕之后立刻替代旧的文件。</li>
+<li>AOF落盘是先写到页缓存，然后再由操作系统在合适的时机写入磁盘，执行fsync函数可以将缓存中的数据写入磁盘，但是这个函数执行很慢，因此一般是每一秒执行一次fsync</li>
+<li>持久化操作一般在从节点进行，从而不影响主节点正常提供服务</li>
+<li>Redis4.0 混合持久化 即将rdb和AOF文件放一起，其中AOF文件内容为持久化开始到结束这段时间发生的增量AOF日志</li>
+<li>管道 客户端提供的技术，类似流水线，多个请求一并发送，多个响应一并返回</li>
+<li>事务 multi，exec，discard 所有的指令在exec之前不会执行，而是放到服务器的一个事务队列中，接收到exec之后才会开始执行。事务在遇到指令执行失败之后，后面的指令还会继续执行。discard，用于丢弃事务队列中的所有指令，在exec执行之前。事务一般会结合管道一起使用</li>
+<li>watch 事务开始之前盯住一个或多个关键变量，当事务执行时，Redis会检查关键变量是否有改变，如果有，exec会返回NULL告知客户端事务执行失败。注意，只能在multi之前执行watch</li>
+<li>PubSub 生产者发一个消息，如果没有消费者，则消息直接丢弃。如果Redis停机重启，PubSub的消息也会丢失</li>
+<li>ziplist结构 zlbytes（整个ziplist占用字节数）zltail（最后一个entry的偏移量，用于直接定位尾部元素）zllen（entry的数量）zlend（255，用于标记结束）</li>
+<li>intset 紧凑的整数数组结构，用于存放元素都是整数且元素个数较少的set集合，如果set里存的是字符串，就变为hashtable（字典）</li>
+<li>Redis并不总是将空闲内存立即归还给操作系统，因为操作系统是以页为单位来回收内存的，这个页上只要有一个key在用就无法回收，不过Redis会重新使用尚未被回收的空闲内存</li>
+<li>Redis使用jemalloc实现内存分配</li>
+</ol>
+<h2 id="集群篇"><a href="#集群篇" class="headerlink" title="集群篇"></a>集群篇</h2><ol>
+<li>主从同步 主节点会将对自己状态产生修改性影响的指令记录在本地内存buffer中，然后异步将buffer中的指令同步到从节点，从节点一边执行指令一边向主节点反馈自己同步到哪里了</li>
+<li>buffer是一个定长的环形数组，如果数组满了，会覆盖之前的内容，此时需要快照同步</li>
+<li>快照同步 主节点执行bgsave，将内存数据快照到磁盘中，然后再全部发给从节点，从节点接收到之后，会先将快照保存到磁盘中，然后将自身内存全部清空，然后全量加载，之后再继续增量同步</li>
+<li>Redis2.8.18开始，Redis支持无盘复制，即直接将快照内容发给从节点，一边遍历内存一边发，不需要先保存到磁盘中。从节点不变，先存储到磁盘中，再一次性加载</li>
+<li>wait指令 让异步复制变为同步复制</li>
+<li>哨兵 哨兵是个集群，类似zk，会持续监控主从节点的健康，当主节点挂了，自动条一个最好的从节点当主节点；客户端连接集群时，通过连接哨兵查询主节点地址，当主节点发生故障时，客户端重新向哨兵要地址</li>
+<li>Codis 无状态，只是转发代理中间件，因此可以启动多个Codis共客户端使用</li>
+<li>Codis分片原理 默认将所有key分为1024个槽（可以设置）先对key进行crc32运算，再对1024取模，即得到槽位。槽位映射关系会存在zk或etcd中</li>
+<li>新增节点，槽位映射需调整，如何找到槽位对应的所有key？Codis对Redis做了改造，增加了SLOTSSCAN指令，可以遍历指定槽下所有的key，然后挨个迁移每个key。当Codis接收到正在迁移的槽位中的key时，会立即强制先对该key进行迁移，然后再将请求转发到新的Redis实例上</li>
+<li>Codis可以自动均衡每个Redis实例上的槽位数量</li>
+<li>Codis不支持事务，不建议value过大否则影响迁移速度</li>
+<li>Cluster 去中心化 每个节点负责整个集群的一部分数据，共分为16384个槽位，槽位与实例对应关系存在每个节点中，因此不需要zk或etcd</li>
+<li>Cluster默认对key使用crc16来hash，然后对16384进行取模</li>
+<li>hash tag，让多个key可以放到同一个槽中</li>
+<li>客户端向错误节点发送指令，会告诉客户端正确的实例位置（有个MOVED指令）</li>
+<li>迁移槽位 首先设置源节点和目标节点的中间过渡状态（源migrating，目标importing）然后一次性获取源节点操作的所有key列表，再挨个key进行迁移，这个迁移过程是同步的</li>
+<li>ASKING指令，迁移过程中一个key如果不在源节点，可能在新节点也可能不在，此时用ASKING让新节点也查一下</li>
+<li>Redis集群使用Gossip协议广播自己的状态，如某一节点发现另一节点失联了（可能下线），它会将这个消息向整个集群广播，如果大多数集群节点都认为该节点失联，则会标记该节点确定下线状态，然后向整个集群广播，然后对失联节点进行主从切换</li>
+</ol>
+<h2 id="拓展篇"><a href="#拓展篇" class="headerlink" title="拓展篇"></a>拓展篇</h2><ol>
+<li>info指令 info stats| grep ops 每秒操作数; info clients 客户端数量；</li>
+<li>分布式锁 主从切换了，源主节点中的锁，新主节点中可能没有，导致一把锁被两个客户端同时持有，要想解决需要使用Redlock算法，需要提供多个Redis实例，之间彼此独立没有主从关系。加锁时，向过半节点发送set指令，只要过半节点set成功就认为加锁成功，释放锁时，向所有节点发送del指令</li>
+<li>过期策略 设置了过期时间的key会放到一个单独的字典中，然后定时遍历这个字典删除过期key，另外还有惰性删除，就是访问某key如果该key已过期，则直接删除</li>
+<li>Redis默认每秒进行10次过期扫描，采用贪心策略：1.从过期字典中挑选20个key，删除掉其中已过期的，如果删掉的数量超过总数四分之一，就继续重复这些步骤；另外还有扫描时间上线，默认不会超过25毫秒；从节点不会进行过期扫描，对过期处理是被动的：主节点在key到期时，会在AOF中新增一条del指令，同步给从节点</li>
+<li>数据淘汰策略：1.noeviction不会继续服务写请求；volatile-lru最少使用的设置过期时间的key优先被淘汰；3.volatile-ttl ttl最小的设置过期时间的key被淘汰；4.volatile-random随机淘汰设置过期时间的key；5.allkeys-lru淘汰最少使用的key不管有没有设置过期时间；6.allkeys-random随机淘汰key</li>
+<li>近似LRU算法，每个key有一个额外小字段长度为24bit，值为最后一次被访问的时间戳。需要淘汰时，随机采样5个key，淘汰掉最旧的key，如果淘汰了还是超出设置的内存大小，就继续采样淘汰，直到小于内存大小为止</li>
+<li>unlink 如果被删除的key是个非常大的对象，可以使用unlink，会由后台线程异步删除；如果key占用内存很小，会直接删除，不用异步后台线程</li>
+<li>AOF Sync也是异步线程实现的，有个自己独有的任务队列</li>
+<li>rename-commands 配置文件中可以对命令名称进行改写，防止误执行高风险指令</li>
+</ol>
+<h2 id="源码篇"><a href="#源码篇" class="headerlink" title="源码篇"></a>源码篇</h2><ol>
+<li>SDS 字符串底层数据结构 包含数组容量，数组长度，特殊标志位，数组内容四个部分</li>
+<li>字符串有两种存储方式：短的时候是embstr，长度超过44字节时，使用raw形式存储</li>
+<li>所有Redis对象都有RedisObject的头结构，需占据16字节，SDS结构最少占用3字节，加起来是19字节。因为使用jemalloc内存分配算法，分配的内存大小都是2，4，8，16，32，64字节，64 - 19 = 45，考虑到字符串需要以NULL为结尾，因此是44字节</li>
+<li>字段使用siphash算法实现hash，性能好，随机性好</li>
+<li>正常情况下，hash表中元素等于数组长度时，会开始扩容到之前2倍，如果正在做bgsave，为减少过多的COW，Redis尽量不去扩容；但若元素数目超过数组长度5倍，则强制扩容；缩容的条件是，元素个数低于数组长度的10%，缩容不考虑bgsave</li>
+<li>跳跃列表，如果修改score，怎么调整顺序？Redis是先删除这个元素，再重新插入。注意，即使score不会导致位置变化也会这么做，感觉可以优化</li>
+<li>score相同时会根据value进行排序</li>
+</ol>
+<p>`</p>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">叶中中</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://yoursite.com/2020/09/07/%E3%80%8ARedis%E6%B7%B1%E5%BA%A6%E5%8E%86%E9%99%A9%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">http://yoursite.com/2020/09/07/%E3%80%8ARedis%E6%B7%B1%E5%BA%A6%E5%8E%86%E9%99%A9%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://yoursite.com" target="_blank">old engineer</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="http://117.50.98.206/images/wallpaper_drop_ocean.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2020/09/01/Java%E8%BF%9B%E9%98%B6%E7%9F%A5%E8%AF%86/"><img class="next-cover" src="http://117.50.98.206/images/wallpaper_drop_ocean.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Java进阶知识</div></div></a></div></nav></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 By 叶中中</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>
