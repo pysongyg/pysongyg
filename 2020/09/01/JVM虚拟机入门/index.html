@@ -1,0 +1,226 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JVM虚拟机面试复习 | 一休的崛起</title><meta name="description" content="类加载过程https:&#x2F;&#x2F;newsoul.info&#x2F;images&#x2F;JVM%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.jpg jvm运行时数据区https:&#x2F;&#x2F;newsoul.info&#x2F;images&#x2F;jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.jpg  java虚拟机栈、本地方法栈"><meta name="keywords" content="JVM虚拟机"><meta name="author" content="叶中中"><meta name="copyright" content="叶中中"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2020/09/01/JVM%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%85%A5%E9%97%A8/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="JVM虚拟机面试复习"><meta property="og:url" content="http://yoursite.com/2020/09/01/JVM%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%85%A5%E9%97%A8/"><meta property="og:site_name" content="一休的崛起"><meta property="og:description" content="类加载过程https:&#x2F;&#x2F;newsoul.info&#x2F;images&#x2F;JVM%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.jpg jvm运行时数据区https:&#x2F;&#x2F;newsoul.info&#x2F;images&#x2F;jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.jpg  java虚拟机栈、本地方法栈"><meta property="og:image" content="https://newsoul.info/images/wallpaper_drop_ocean.jpg"><meta property="article:published_time" content="2020-09-01T06:10:54.000Z"><meta property="article:modified_time" content="2021-06-17T14:36:45.821Z"><meta name="twitter:card" content="summary"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.1.1',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime: '',
+  date_suffix: {"one_hour":"刚刚","hours":"小时前","day":"天前"},
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+      const now = new Date()
+      const expiryDay = ttl * 86400000
+      const item = {
+        value: value,
+        expiry: now.getTime() + expiryDay,
+      }
+      localStorage.setItem(key, JSON.stringify(item))
+    },
+  
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-06-17 22:36:45'
+}</script><noscript><style type="text/css">
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+  }
+}
+
+var autoChangeMode = 'false'
+var t = saveToLocal.get('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (saveToLocal.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><meta name="generator" content="Hexo 5.1.1"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">4</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">1</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fa fa-camera-retro"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fa fa-film"></i><span> 电影</span></a></li><li><a class="site-page" href="/books/"><i class="fa-fw fa fa-film"></i><span> 书籍</span></a></li><li><a class="site-page" href="/games/"><i class="fa-fw fa fa-film"></i><span> 游戏</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fa fa-picture-o"></i><span> 照片</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fa fa-link"></i><span> 留言板</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B"><span class="toc-text">类加载过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA"><span class="toc-text">jvm运行时数据区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Jvm%E5%8F%82%E6%95%B0%E7%BD%AE"><span class="toc-text">Jvm参数置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ParNew-CMS%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-text">ParNew+CMS垃圾回收的基本原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%A7%A6%E5%8F%91Young-GC"><span class="toc-text">什么时候触发Young GC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%A7%A6%E5%8F%91Old-GC"><span class="toc-text">什么时候触发Old GC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ParNew-CMS%E8%B0%83%E4%BC%98"><span class="toc-text">ParNew + CMS调优</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Full-GC%E4%BA%A7%E7%94%9F%E7%9A%84%E5%87%A0%E7%A7%8D%E6%83%85%E5%86%B5"><span class="toc-text">Full GC产生的几种情况:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E6%88%91%E4%BB%AC%E8%A6%81%E8%AD%A6%E8%A7%89%E6%98%AF%E4%B8%8D%E6%98%AF%E9%A2%91%E7%B9%81%E7%9A%84Full-GC%E4%BA%86"><span class="toc-text">什么情况下我们要警觉是不是频繁的Full GC了</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8DOld-GC"><span class="toc-text">如何避免Old GC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#G1%E4%B8%AD%E5%B9%B4%E8%BD%BB%E4%BB%A3%E7%9A%84%E5%AF%B9%E8%B1%A1%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E4%BC%9A%E8%BF%9B%E5%85%A5%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="toc-text">G1中年轻代的对象什么情况下会进入老年代</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#G1%E7%9A%84%E5%9B%9E%E6%94%B6%E8%BF%87%E7%A8%8B"><span class="toc-text">G1的回收过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#G1%E4%BD%95%E6%97%B6%E4%BC%9A%E8%A7%A6%E5%8F%91Full-GC"><span class="toc-text">G1何时会触发Full GC</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%901-%E5%84%92%E7%8C%BF054"><span class="toc-text">案例分析1;儒猿054</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%902-%E5%84%92%E7%8C%BF057"><span class="toc-text">案例分析2;儒猿057</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%903%EF%BC%9B%E5%84%92%E7%8C%BF058"><span class="toc-text">案例分析3；儒猿058</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%904%EF%BC%9B%E5%84%92%E7%8C%BF059"><span class="toc-text">案例分析4；儒猿059</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E9%85%8D%E7%BD%AE"><span class="toc-text">实验配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%84%92%E7%8C%BF0076-0078"><span class="toc-text">儒猿0076~0078</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8JVM%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%E6%97%B6%E5%80%99%E8%87%AA%E5%8A%A8dump%E5%86%85%E5%AD%98%E5%BF%AB%E7%85%A7"><span class="toc-text">在JVM内存溢出的时候自动dump内存快照</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#083-085-Metaspace%E3%80%81%E6%A0%88%E5%92%8C%E5%A0%86%E6%BA%A2%E5%87%BA%E5%88%86%E5%88%AB%E5%BA%94%E8%AF%A5%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%EF%BC%9F"><span class="toc-text">083~085 Metaspace、栈和堆溢出分别应该如何解决？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#086%E8%AE%B2%E5%A4%9A%E7%9C%8B%E5%87%A0%E9%81%8D"><span class="toc-text">086讲多看几遍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#087%E8%AE%B2"><span class="toc-text">087讲</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">常用命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E8%BD%AF%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">工具软件的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="toc-text">参考文档</span></a></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(https://newsoul.info/images/wallpaper_key_board.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">一休的崛起</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fa fa-camera-retro"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fa fa-film"></i><span> 电影</span></a></li><li><a class="site-page" href="/books/"><i class="fa-fw fa fa-film"></i><span> 书籍</span></a></li><li><a class="site-page" href="/games/"><i class="fa-fw fa fa-film"></i><span> 游戏</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fa fa-picture-o"></i><span> 照片</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/messageboard/"><i class="fa-fw fa fa-link"></i><span> 留言板</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">JVM虚拟机面试复习</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-09-01T06:10:54.000Z" title="发表于 2020-09-01 14:10:54">2020-09-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-06-17T14:36:45.821Z" title="更新于 2021-06-17 22:36:45">2021-06-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%9D%A2%E8%AF%95%E9%A2%98/">面试题</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h3 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h3><p><a target="_blank" rel="noopener" href="https://newsoul.info/images/JVM%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.jpg">https://newsoul.info/images/JVM%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B.jpg</a></p>
+<h3 id="jvm运行时数据区"><a href="#jvm运行时数据区" class="headerlink" title="jvm运行时数据区"></a>jvm运行时数据区</h3><p><a target="_blank" rel="noopener" href="https://newsoul.info/images/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.jpg">https://newsoul.info/images/jvm%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA.jpg</a></p>
+<ol>
+<li>java虚拟机栈、本地方法栈和堆老生常谈了</li>
+<li>方法区(规范)【元空间】<br><br>用于存储已被虚拟机加载的类信息、常量、静态变量，如static修饰的变量加载类的时候就被加载到方法区中。<br><b>在JDK1.8中，使用元空间代替永久代来实现方法区（元空间并不在虚拟机中，而是使用本地内存），元数据空间并不在虚拟机中，而是使用本地内存（不需要进行 GC）。</b>会出现OutOfMemoryError</li>
+<li>程序计数器<br>因为Java是支持多线程的，所以必须要有程序计数器，记录这个线程执行到哪了；但是如果调用本地方法栈则程序计数器为空。<br><br><a target="_blank" rel="noopener" href="https://newsoul.info/images/jvm%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8%E5%92%8C%E6%96%B9%E6%B3%95%E5%8C%BA.jpg">https://newsoul.info/images/jvm%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8%E5%92%8C%E6%96%B9%E6%B3%95%E5%8C%BA.jpg</a></li>
+</ol>
+<h3 id="Jvm参数置"><a href="#Jvm参数置" class="headerlink" title="Jvm参数置"></a>Jvm参数置</h3><p>-X m s X<br><br>-Xms 堆内存大小<br><br>-Xmx 堆内存最大大小<br><br>-Xmn 新生代的大小<br><br>-Xss 栈大小<br><br>-XX:PermSize 永久代大小<br><br>-XX:MaxPermSize 永久代最大大小<br><br>经典设置是多少？</p>
+<h3 id="ParNew-CMS垃圾回收的基本原理"><a href="#ParNew-CMS垃圾回收的基本原理" class="headerlink" title="ParNew+CMS垃圾回收的基本原理"></a>ParNew+CMS垃圾回收的基本原理</h3><p><a target="_blank" rel="noopener" href="https://newsoul.info/images/ParNew%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86.jpg">ParNew回收年轻代基本原理</a><br></p>
+<ol>
+<li><p>年轻代算法：复制清除算法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Eden区的占比有时是可以调优的，如果条件有限，没有大内存的机器，然后对象创建的还特别频繁，存活的对象比较多，那就建议把Eden区比例调低一些，让Survivor大一点，宁可Young GC多一些【通过jstat看，回收100M垃圾大概也就1ms】，也不要让Survivor触发了动态年龄审核或者放不下存活对象。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>CMS回收老年代,标记-清除+整理【JVM参数默认是，标记-清除，5次之后，才会去整理内存空间，我们可以调成0】<br> 过程:初始标记(STW)，并发标记，重新标记(STW)，并发清理</p>
+</li>
+</ol>
+<h3 id="什么时候触发Young-GC"><a href="#什么时候触发Young-GC" class="headerlink" title="什么时候触发Young GC"></a>什么时候触发Young GC</h3><p>Eden区满了就会触发Young GC</p>
+<h3 id="什么时候触发Old-GC"><a href="#什么时候触发Old-GC" class="headerlink" title="什么时候触发Old GC"></a>什么时候触发Old GC</h3><ol>
+<li>‘老年的连续可用空间’&lt;’历次从年轻代Young GC 回收到老年代的对象的大小总和的平均大小’；这个说明这次Young GC之后会进入Old GC，所以先会Old GC然后Young GC。</li>
+<li>Young GC之后，回收到老年的对象大小总和大于’老年代连续可用空间，触发Old GC。</li>
+<li>老年代内存使用率超过92%</li>
+</ol>
+<p>###</p>
+<h3 id="ParNew-CMS调优"><a href="#ParNew-CMS调优" class="headerlink" title="ParNew + CMS调优"></a>ParNew + CMS调优</h3><p>JVM的几种GC，Young GC，Old GC，Full GC<br><br>最重要的是尽量避免Full GC<br></p>
+<h4 id="Full-GC产生的几种情况"><a href="#Full-GC产生的几种情况" class="headerlink" title="Full GC产生的几种情况:"></a>Full GC产生的几种情况:</h4><ol>
+<li>内存分配不合理，Survior区放不下，或者触发动态年龄审核；</li>
+<li>内存泄露</li>
+<li>大对象太多</li>
+<li>永久代满了</li>
+<li>误用System.gc()，一定概率触发；JVM参数可以配置禁止。<br></li>
+</ol>
+<h4 id="什么情况下我们要警觉是不是频繁的Full-GC了"><a href="#什么情况下我们要警觉是不是频繁的Full-GC了" class="headerlink" title="什么情况下我们要警觉是不是频繁的Full GC了"></a>什么情况下我们要警觉是不是频繁的Full GC了</h4><ol>
+<li>CPU折线上升</li>
+<li>系统卡死</li>
+<li>监控报警</li>
+</ol>
+<h4 id="如何避免Old-GC"><a href="#如何避免Old-GC" class="headerlink" title="如何避免Old GC"></a>如何避免Old GC</h4><p>思路:尝试让对象尽量不要进入老年代<br></p>
+<ol>
+<li>对象经过15次YoungGC，依然是存活的，那晋升老年代;谨防对象不大不小的，触发动态年龄审核，使一大批对象进入老年代，可以适当调整进入老年代需要进过的YoungGC次数；让该进老年代的对象早点进老年代。</li>
+<li>Young GC后存活的对象大小超过Survivor 的50%，那就会触发动态年龄审核机制，如：1岁、2岁、3岁、4岁的对象加起来大于Survivor 的50%，那大于等于4岁的对象全部进入老年代。</li>
+<li>Young GC后存活的对象大于Survivor的大小，那这一批对象直接全部进入老年代，特别坑。</li>
+<li>大对象直接进入老年代，这个JVM参数里是可以设置的，一般我们都设置1M。<br><br>
+第1种情况和第4种情况，一般是可控的。所以想要优化的话，主要是要在Survivor的大小这块下功夫。我们要避免动态年龄审核和Survivor放不下的情况。
+<b>JVM中每秒有多少对象新增，每次YoungGC存活了多少对象。这就需要用 jstat 了。</b>
+### G1垃圾回收器</li>
+<li>G1把堆内存平均分成了多个大小相同的Region，我们首先要设置堆内存的大小，然后G1会根据堆大小除以2048，分成2048个大小相同的Region。比如2G内存，每个Region就是1M。</li>
+<li>G1也是有年轻代、老年代的概念，但是只是概念。某些Region属于年轻代，某些Region属于老年代，由G1动态控制。系统刚开始运行时，会给年轻代分配5%的Region来存放对象，年轻代最多可以占用60%的Region，这60%可以通过JVM参数指定，默认是60%。</li>
+<li>G1整体使用的都是复制回收算法</li>
+<li>可以设置一个预期的停顿时间。每次GC我只允许STW的5ms，那我们就可以通过JVM参数设置成5ms的停顿，这样G1在垃圾回收时，就会把时间控制在5ms以内。</li>
+<li>G1的垃圾回收不一定是年轻代满了，或者老年代满了才去回收。G1是基于每个Region的性价比去回收的，比如，Region1里有20M对象，回收2ms，Region2里有50兆对象回收要4ms。如果我们设置系统停顿时间为5ms。那G1会在要求的时间内，尽可能回收更多的对象，选择回收Region2。<br></li>
+</ol>
+<h4 id="G1中年轻代的对象什么情况下会进入老年代"><a href="#G1中年轻代的对象什么情况下会进入老年代" class="headerlink" title="G1中年轻代的对象什么情况下会进入老年代"></a>G1中年轻代的对象什么情况下会进入老年代</h4><p>其实和ParNew + CMS整体上是差不多的，只有大对象的处理不一样；专门有一部分Region存放大对象用。如果一个Region放不下大对象，那就会横跨几个Region来存放。</p>
+<h4 id="G1的回收过程"><a href="#G1的回收过程" class="headerlink" title="G1的回收过程"></a>G1的回收过程</h4><ol>
+<li>初始标记(STW)</li>
+<li>并发标记</li>
+<li>重新标记(STW)</li>
+<li>混合回收，只有这一步和CMS不一样，CMS这里的回收时和系统并行的。但是<b>G1的混合回收需要STW。</b><br><br>混合回收不仅会回收老年代，还会回收新生代和大对象。如果一次性全回收掉，那时间就太久了，可能达不到我们设置的预期停顿时间，所以G1这里是分几批来回收的，回收一次，系统运行一会，然后再回收一次。JVM参数可以设置这个值，分几次去回收，默认值是8次，分8次回收。<br><br>混合回收还有一个参数我们可以设置，就是空闲的Region达到百分之多少，停止回收，默认是5%。<br></li>
+</ol>
+<h4 id="G1何时会触发Full-GC"><a href="#G1何时会触发Full-GC" class="headerlink" title="G1何时会触发Full GC"></a>G1何时会触发Full GC</h4><p>什么情况下会出现呢，因为G1的整体是基于复制算法的，如果回收的过程中，发现存活对象找不到可以复制的Region，放不下了。那就Full GC，开始单线程标记、清理、整理空闲出一批Region，这个过程很慢。</p>
+<h3 id="案例分析1-儒猿054"><a href="#案例分析1-儒猿054" class="headerlink" title="案例分析1;儒猿054"></a>案例分析1;儒猿054</h3><p>例如，一个实时计算平台，一条结果数据1K，一万条数据大概10M；<br><br>我们现分配eden区1.2G，2个S区分别100M；老年代1.5G；<br><br>每次计算任务耗时1秒，产生一万条数据，一分钟计算100次，产生1G左右数据，一分钟左右eden区基本满了；<br><br>一个计算任务每次耗时10秒，假设每分钟最后有80个任务都计算完了，20个任务还在计算，就有200M在内存中有引用的对象，每分钟可以回收的垃圾为1G，重点是Minor GC时，200M的内存不能放入S区，所以直接触发空间担保机制，直接放入老年代。<br><br>7次Minor GC之后，老年代就只剩1.4G了；当第8次Minor GC时，老年代已经放不下200M的垃圾了，所以触发FullGC。<br><br>这里直观的感受是，增大S区到200M就可以极大优化上述系统的FullGC频率，因为每次Minor GC时，都会把200M有引用的对象放入S区，而不会放入老年代。</p>
+<h3 id="案例分析2-儒猿057"><a href="#案例分析2-儒猿057" class="headerlink" title="案例分析2;儒猿057"></a>案例分析2;儒猿057</h3><p>由于老年代内存空间每次full GC之后，会有内存碎片，而内存碎片很多种情况下又没有意义，’-XX+UserCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=5’，可以直接把-XX:CMSFullGCsBeforeCompation改成0；每次标记清除完都整理内存碎片，已保证老年代有连续内存空间，用来放Minor GC时来自新生代的对象。</p>
+<h3 id="案例分析3；儒猿058"><a href="#案例分析3；儒猿058" class="headerlink" title="案例分析3；儒猿058"></a>案例分析3；儒猿058</h3><p>那么每次垃圾回收过后存活对象可能会有几十MB，这是因为在垃圾回收的一瞬间可能有部分请求没处理完毕，此时会有几十MB对象是存活的，如果年轻代过小的话，所以很容易触发动态年龄判定规则，让部分对象进入老年代。<br><br>所以在分析过后，给年轻代更大内存空间，让Survivor空间更大，这样在Young GC的时候，这一瞬间可能有部分请求没处理完毕，有几十MB的存活对象，这个时候在几百MB的Survivor空间中可以轻松放下，绝对不会进老年代。<br><br><br><br>如何优化每次Full GC的性能？<br><br>初始标记时，并发<br>-XX:+CMSParallelInitialMarkEnabled<br><br>重新标记之前，先MinorGC；减少CMS重新标记时要扫描的对象。<br>-XX:+CMSScavengeBeforeRemark</p>
+<h3 id="案例分析4；儒猿059"><a href="#案例分析4；儒猿059" class="headerlink" title="案例分析4；儒猿059"></a>案例分析4；儒猿059</h3><p>这个就很少见了，10分钟Full GC3次，在GC日志了有”Metadata GC Threshold”的字样。<br><br>加入启动参数:”-XX:TraceClassLoading -XX:TraceClassUnloading”，就是追踪类加载和类卸载情况。<br><br>Tomcat的catalina.out日志文件中可以看到大量的日志:”【Loaded sun.reflect.GeneratedSerializationConstructorAccessor from _JVM_Defined_Class】”<br><br>得出结论是代码里的大量反射，JVM会生成一些动态的类放到Metaspace中去。<br><br>而这些奇怪的类都是SoftReference，软引用，众所周知，软引用是在内存不足的情况下必然会被回收的，公式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clock-timestamp&lt;&#x3D;freespace * SoftRefLRUPolicyMSPERMB</span><br></pre></td></tr></table></figure>
+<p>如果误把SoftRefLRUPolicyMSPERMB设置为0，软引用对象会尽快被回收掉，对象被回收了，类信息没有被回收，而反射机制还会生成新的奇怪的类，这样就容易导致Metaspace占满而Full GC。</p>
+<h3 id="实验配置"><a href="#实验配置" class="headerlink" title="实验配置"></a>实验配置</h3><p>实验1</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:NewSize&#x3D;10485760 -XX:MaxNewSize&#x3D;10485760 -XX:InitialHeapSize&#x3D;20971520 -XX:MaxHeapSize&#x3D;20971520 -XX:SurvivorRatio&#x3D;8  -XX:MaxTenuringThreshold&#x3D;15 -XX:PretenureSizeThreshold&#x3D;10485760 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:gc.log</span><br></pre></td></tr></table></figure>
+<p>实验2;儒猿054，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-XX:NewSize&#x3D;209715200 -XX:MaxNewSize&#x3D;209715200 -XX:InitialHeapSize&#x3D;314572800 -XX:MaxHeapSize&#x3D;314572800 -XX:SurvivorRatio&#x3D;2  -XX:MaxTenuringThreshold&#x3D;15 -XX:PretenureSizeThreshold&#x3D;20971520 -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:gc.log</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>案例3；儒猿067<br>String.split()造成内存泄漏<br><br>JDK1.6 =&gt;JDK 1.7<br><br>在JDK1.6的时候，String.split()方法的实现是这样子的，比如你有一个字符串，”Hello World Ha Ha”，然后你按照空格来切割这个自字符串，应该会出来四个字符串”Hello””World””Ha””Ha”，大家应该理解这个吧？<br><br>那么JDK 1.6的时候，比如”Hello World Ha Ha”这个原始字符串底层是基于一个数组来存放那些字符的<br><br>比如[H,e,l,l,o,,W,o,r,l,d,,H,a,H,a]数组中的0~4位置的元素。<br><br>但是JDK1.7的时候，他的实现是给每个切分出来的字符串都创建一个新的数组，比如”Hello”字符串就对应一个全新的数组，[H,e,l,l,o]。<br><br>所以当时那个线上系统的处理逻辑，就是加载大量的数据出来，可能有的时候一次性加载几十万条数据，数据主要是字符串<br><br>然后对这些串进行切割，每个字符串都会切割为N个小字符串。<br><br>循环里用String.split，瞬间导致字符串数量暴增几倍甚至几十倍，这就是系统为什么会频繁产生大量对象的根本原因。</p>
+<h3 id="儒猿0076-0078"><a href="#儒猿0076-0078" class="headerlink" title="儒猿0076~0078"></a>儒猿0076~0078</h3><p>分别手动模拟Metaspace、虚拟机栈和堆的内存溢出</p>
+<ol>
+<li>模拟Metaspace内存溢出<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">引入cglib的包:</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;cglib&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;cglib&lt;&#x2F;artifactId&gt;</span><br><span class="line">    &lt;version&gt;3.3.0&lt;&#x2F;version&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br><span class="line">设置jvm参数:-XX:MetaspaceSize&#x3D;10M -XX:MaxMetaspaceSize&#x3D;10M</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">import net.sf.cglib.proxy.Enhancer;</span><br><span class="line">import net.sf.cglib.proxy.MethodInterceptor;</span><br><span class="line">import net.sf.cglib.proxy.MethodProxy;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author: yige.song</span><br><span class="line"> * @version: v1.0</span><br><span class="line"> * @description: com.jhtech.appdemo.util.exception</span><br><span class="line"> * @2021&#x2F;6&#x2F;3</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class MetaspaceDemo &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        long counter &#x3D; 0;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            System.out.println(&quot;创建了&quot;+ counter++ +&quot;个Car的子类对象&quot;);</span><br><span class="line">            Enhancer enhancer &#x3D; new Enhancer();</span><br><span class="line">            enhancer.setSuperclass(Car.class);</span><br><span class="line">            enhancer.setUseCache(false);</span><br><span class="line">            enhancer.setCallback(new MethodInterceptor() &#123;</span><br><span class="line">                @Override</span><br><span class="line">                public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable &#123;</span><br><span class="line">                    if (&quot;run&quot;.equals(method.getName())) &#123;</span><br><span class="line">                        System.out.println(&quot;启动汽车之前，先进行安全检查...&quot;);</span><br><span class="line">                        return methodProxy.invokeSuper(o, objects);</span><br><span class="line">                    &#125;</span><br><span class="line">                    return methodProxy.invokeSuper(o, objects);</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            Car car &#x3D; (Car) enhancer.create();</span><br><span class="line">            car.run();</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    static class Car &#123;</span><br><span class="line"></span><br><span class="line">        public void run() &#123;</span><br><span class="line">            System.out.println(&quot;汽车启动，开始行驶....&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">汽车启动，开始行驶....</span><br><span class="line">创建了267个Car的子类对象</span><br><span class="line">Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Metaspace</span><br><span class="line">	at java.lang.Class.forName0(Native Method)</span><br><span class="line">	at java.lang.Class.forName(Class.java:348)</span><br><span class="line">	at net.sf.cglib.core.ReflectUtils.defineClass(ReflectUtils.java:467)</span><br><span class="line">	at net.sf.cglib.core.AbstractClassGenerator.generate(AbstractClassGenerator.java:339)</span><br><span class="line">	at net.sf.cglib.proxy.Enhancer.generate(Enhancer.java:492)</span><br><span class="line">	at net.sf.cglib.core.AbstractClassGenerator$ClassLoaderData.get(AbstractClassGenerator.java:117)</span><br><span class="line">	at net.sf.cglib.core.AbstractClassGenerator.create(AbstractClassGenerator.java:294)</span><br><span class="line">	at net.sf.cglib.proxy.Enhancer.createHelper(Enhancer.java:480)</span><br><span class="line">	at net.sf.cglib.proxy.Enhancer.create(Enhancer.java:305)</span><br><span class="line">	at com.jhtech.appdemo.util.exception.MetaspaceDemo.main(MetaspaceDemo.java:35)</span><br><span class="line"></span><br><span class="line">Process finished with exit code 1</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li>栈内存溢出<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">设置栈参数:</span><br><span class="line">-XX:ThreadStackSize&#x3D;1M</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * @author: yige.song</span><br><span class="line"> * @version: v1.0</span><br><span class="line"> * @description: com.jhtech.appdemo.util.exception</span><br><span class="line"> * @2021&#x2F;6&#x2F;3</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class StackDemo &#123;</span><br><span class="line">    public static long counter &#x3D; 0L;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        work();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void work()&#123;</span><br><span class="line">        System.out.println(&quot;目前是第&quot;+counter++ +&quot;次调用方法&quot;);</span><br><span class="line">        work();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">目前是第5279次调用方法</span><br><span class="line">*** java.lang.instrument ASSERTION FAILED ***: &quot;!errorOutstanding&quot; with message transform method call failed at JPLISAgent.c line: 844</span><br><span class="line">*** java.lang.instrument ASSERTION FAILED ***: &quot;!errorOutstanding&quot; with message transform method call failed at JPLISAgent.c line: 844</span><br><span class="line">*** java.lang.instrument ASSERTION FAILED ***: &quot;!errorOutstanding&quot; with message transform method call failed at JPLISAgent.c line: 844</span><br><span class="line">Exception in thread &quot;main&quot; java.lang.StackOverflowError</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>堆内存溢出<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">设置堆内存参数:</span><br><span class="line">-XX:InitialHeapSize&#x3D;10M -XX:MaxHeapSize&#x3D;10M</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> * @author: yige.song</span><br><span class="line"> * @version: v1.0</span><br><span class="line"> * @description: com.jhtech.appdemo.util.exception</span><br><span class="line"> * @2021&#x2F;6&#x2F;3</span><br><span class="line"> **&#x2F;</span><br><span class="line">public class HeapDemo &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        long counter &#x3D; 0;</span><br><span class="line">        List&lt;Object&gt; list &#x3D; new ArrayList&lt;&gt;();</span><br><span class="line">        while (true)&#123;</span><br><span class="line">            list.add(new Object());</span><br><span class="line">            System.out.println(&quot;创建了&quot;+ counter++ +&quot;个对象&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="在JVM内存溢出的时候自动dump内存快照"><a href="#在JVM内存溢出的时候自动dump内存快照" class="headerlink" title="在JVM内存溢出的时候自动dump内存快照"></a>在JVM内存溢出的时候自动dump内存快照</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">增加JVM参数:</span><br><span class="line">-XX:HeapDumpOnOutOfMemoryError</span><br><span class="line">-XX:HeapDumpPath&#x3D;&#x2F;usr&#x2F;local&#x2F;app&#x2F;oom</span><br></pre></td></tr></table></figure>
+
+<h3 id="083-085-Metaspace、栈和堆溢出分别应该如何解决？"><a href="#083-085-Metaspace、栈和堆溢出分别应该如何解决？" class="headerlink" title="083~085 Metaspace、栈和堆溢出分别应该如何解决？"></a>083~085 Metaspace、栈和堆溢出分别应该如何解决？</h3><ol>
+<li>Metaspace</li>
+<li>栈(比较简单，略过)</li>
+<li>堆</li>
+</ol>
+<h3 id="086讲多看几遍"><a href="#086讲多看几遍" class="headerlink" title="086讲多看几遍"></a>086讲多看几遍</h3><h3 id="087讲"><a href="#087讲" class="headerlink" title="087讲"></a>087讲</h3><p><a target="_blank" rel="noopener" href="https://newsoul.info/images/087%E3%80%81%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%88%98%EF%BC%9AJetty%20%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%20NIO%20%E6%9C%BA%E5%88%B6%E6%98%AF%E5%A6%82%E4%BD%95%E5%AF%BC%E8%87%B4%E5%A0%86%E5%A4%96%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E7%9A%84%EF%BC%9F.jpg">087、案例实战：Jetty 服务器的 NIO 机制是如何导致堆外内存溢出的？</a></p>
+<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><ul>
+<li>jps查看java进程</li>
+<li>jinfo $pid 查看java进程信息(能看到jvm参数等等配置信息)</li>
+<li>jstack 查看jvm运行信息(可用于排查死锁)</li>
+<li>jmap dump内存进行分析</li>
+<li>jstat 查看gc相关信息<br>jstat -gc PID 1000 10</li>
+</ul>
+<h3 id="工具软件的使用"><a href="#工具软件的使用" class="headerlink" title="工具软件的使用"></a>工具软件的使用</h3><p><a target="_blank" rel="noopener" href="https://arthas.gitee.io/">arthas官网</a><br><br><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903998730797070">arthas参考文档</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.manongjc.com/detail/14-ybqczhdvyegxiee.html">jprofile参考教程</a></p>
+<h4 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h4><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_17164811/article/details/107141112">JVM运行原理及优化_儒猿技术窝JVM课程推荐</a><br><br><br><a target="_blank" rel="noopener" href="https://apppukyptrl1086.pc.xiaoe-tech.com/detail/i_5d11df8cad6a0_0ZT3oNcc/1?from=p_5d0ef9900e896_MyDfcJi8&type=6">儒猿技术窝JVM课程</a><br>71~96:OOM<br><br><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/wantLight/article/details/106666153">敖丙JVM思维导图</a></p>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">叶中中</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://yoursite.com/2020/09/01/JVM%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%85%A5%E9%97%A8/">http://yoursite.com/2020/09/01/JVM%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%85%A5%E9%97%A8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://yoursite.com" target="_blank">一休的崛起</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://newsoul.info/images/wallpaper_drop_ocean.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-full"><a href="/2020/09/01/Java%E8%BF%9B%E9%98%B6%E7%9F%A5%E8%AF%86/"><img class="prev-cover" src="https://newsoul.info/images/wallpaper_drop_ocean.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Java进阶知识</div></div></a></div></nav></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By 叶中中</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="icp"><a target="_blank" rel="noopener" href="http://www.beian.gov.cn/"><img class="icp-icon" src="/img/icp.png"/><span>浙ICP备2021013061号</span></a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>
